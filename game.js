@@ -14,6 +14,7 @@ var game = {
 	yellowSector: ['2.0.0','2.0.1','2.0.2','2.1.0','2.1.1','2.1.2'],
 	greenSector: ['1.1.0','1.1.1','1.1.2','1.2.0','1.2.1','1.2.2'],
 	blueSector: ['0.2.0','0.2.1','0.2.2','1.0.0','1.0.1','1.0.2'],
+	items: ['Red Access Card', 'Yellow Access Card', 'Blue Access Card', 'Probe', 'Negatron', 'Decoder', 'Disruptor'],
 	skill: 0,
 	timer: 0,
 	numPlayers: 0,
@@ -33,31 +34,18 @@ var game = {
 		}).then(function(answer) {
 			switch(answer.action) {
 				case '0-Easy':
-					game.setSkill(0);
+					game.skill = 0;
 				break;
 				case '1-Medium':
-					game.setSkill(1);
+					game.skill = 1;
 				break;
 				case '2-Hard':
-					game.setSkill(2);
+					game.skill = 2;
 				break;
 			}
+			//Move to setting players
+			game.setPlayers();
 		})
-	},
-	setSkill: function(level){
-		//Sets game skill level
-
-		if (level == 0){
-			game.skill = 0;
-		}
-		if (level == 1){
-			game.skill = 1;
-		}
-		if (level == 2){
-			game.skill = 2;
-		}
-		//Move to setting players
-		game.setPlayers();
 	},
 	setPlayers: function(){
 		//Players enter secret code
@@ -81,33 +69,32 @@ var game = {
 				message: "Blue, enter Secret Code: "
 			}]).then(function(answer) {
 
-			//Create players
+			//Create players if answer provided
 				if (answer.red != ''){
 					var red = new Player("Red", answer.red);
 					game.numPlayers++;
 					game.players.push("Red");
-					// console.log(red);
 				}
 				if (answer.yellow != ''){
 					var yellow = new Player("Yellow", answer.yellow);
 					game.numPlayers++;
 					game.players.push("Yellow");
-					// console.log(yellow);
 				}
 				if (answer.green != ''){
 					var green = new Player("Green", answer.green);
 					game.numPlayers++;
 					game.players.push("Green");
-					// console.log(green);
 				}
 				if (answer.blue != ''){
 					var blue = new Player("Blue", answer.blue);
 					game.numPlayers++;
 					game.players.push("Blue");
-					// console.log(blue);
 				}
-		
+				
+				//Randomize player order
 				game.shufflePlayers();
+
+				//Set timer with relevant # of players
 				game.setTimer();		
 			});
 		
@@ -121,39 +108,39 @@ var game = {
 				game.players[i] = game.players[j];
 				game.players[j] = temp;
 			}	
-			console.log(game.players);
+console.log(game.players);
 		
 	},
 	setVirus: function(){
 		//Pick room for virus
 		game.virusRoom = game.room[Math.floor(Math.random() * game.room.length)];
 
-		console.log(game.virusRoom);
-//Can't determine which sector virus is in!!!
-		for (i = 0; i < game.redSector.length; i++){
-			if (game.redSector.indexOf(game.virusRoom)) {
-				console.log("Virus in " + game.sectorName[0]);
+		//Search eacter sector for virusRoom, and set virusSector to the respective sector
+		for (var i = 0; i < game.redSector.length; i++){
+				if (game.virusRoom == game.redSector[i]) {
+					game.virusSector = game.sectorName[0];
 			}
 		}
-		for (i = 0; i < game.yellowSector.length; i++){
-			if (game.yellowSector.indexOf(game.virusRoom)) {
-				console.log("Virus in " + game.sectorName[1]);
+		for (var i = 0; i < game.yellowSector.length; i++){
+				if (game.virusRoom == game.yellowSector[i]) {
+					game.virusSector = game.sectorName[1];
 			}
 		}
-		for (i = 0; i < game.greenSector.length; i++){
-			if (game.greenSector.indexOf(game.virusRoom)) {
-				console.log("Virus in " + game.sectorName[2]);
+		for (var i = 0; i < game.greenSector.length; i++){
+				if (game.virusRoom == game.greenSector[i]) {
+					game.virusSector = game.sectorName[2];
 			}
 		}
-		for (i = 0; i < game.blueSector.length; i++){
-			if (game.blueSector.indexOf(game.virusRoom)) {
-				console.log("Virus in " + game.sectorName[3]);
+		for (var i = 0; i < game.blueSector.length; i++){
+				if (game.virusRoom == game.blueSector[i]) {
+					game.virusSector = game.sectorName[3];
 			}
 		}
 	},
 	setTimer: function(){
 		//Determine timer length
 
+		//Shortcuts for game.numPlayers and game.skill
 		var players = game.numPlayers;
 		var level = game.skill;
 
@@ -189,18 +176,25 @@ var game = {
 		}
 	},
 	countDown: function(level, numPlayers){
-		//Set clock and use reminders
+		//Set clock and announce time every five minutes
 
-		console.log("In countDown");
-		//Timer counts down
-		// clock = setInterval(game.countDown, 1000);
+		//Announce time every five minutes
+		if (game.timer % 300 == 0){
+			
+			var timeCount = (game.timer / 60);
 
-		// if(game.timer > 0){
-			
-		// 	//Decrement time
-		// 	game.timer--;
-			
+			console.log(timeCount + " minutes until I take over.");
+		}
+		console.log(game.timer);
 		
+		//Timer counts down
+		var clock = setInterval(game.countDown, 1000);
+
+		if(game.timer > 0){
+			
+			//Decrement time
+			game.timer--;
+		}
 	},
 	speak: function(){
 		//Narrate what happens
@@ -212,7 +206,7 @@ var game = {
 		//When repeat button used
 	},
 	accessCheck: function(){
-		//Can user enter room
+		//Can user enter room?
 	},
 	roomCheck: function(){
 		//When user enters room #
@@ -251,8 +245,11 @@ function Player(name, virusCode){
 	this.hasNegatron = false,
 	this.hasDisruptor = false,
 	this.hasDecoder = false,
-	this.hasProbe = false;
+	this.hasProbe = false,
+	this.items = ['Green Access Card'];
 }
 
 //Start the game
-game.startGame();
+// game.startGame();
+game.timer = 300;
+game.countDown();
