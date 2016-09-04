@@ -18,7 +18,7 @@ var game = {
 	timer: 0,
 	numPlayers: 0,
 	players: [],
-	virusSpeak: ['You human scum!', 'Help me, help me! Ah-ha-ha-ha!'],
+	virusSpeak: ['You human scum!', 'Help me, help me! Ah-ha-ha-ha!', 'You fool!'],
 	startGame: function(){
 		//Starts the game
 		
@@ -86,30 +86,43 @@ var game = {
 					var red = new Player("Red", answer.red);
 					game.numPlayers++;
 					game.players.push("Red");
-					console.log(red);
+					// console.log(red);
 				}
 				if (answer.yellow != ''){
 					var yellow = new Player("Yellow", answer.yellow);
 					game.numPlayers++;
 					game.players.push("Yellow");
-					console.log(yellow);
+					// console.log(yellow);
 				}
 				if (answer.green != ''){
 					var green = new Player("Green", answer.green);
 					game.numPlayers++;
 					game.players.push("Green");
-					console.log(green);
+					// console.log(green);
 				}
 				if (answer.blue != ''){
 					var blue = new Player("Blue", answer.blue);
 					game.numPlayers++;
 					game.players.push("Blue");
-					console.log(blue);
-					console.log(game.players);
+					// console.log(blue);
 				}
-
-				game.setTimer()
+		
+				game.shufflePlayers();
+				game.setTimer();		
 			});
+		
+	},
+	shufflePlayers: function(){
+		//Randomize player order
+
+			for (var i = game.players.length - 1; i > 0; i--) {
+				var j = Math.floor(Math.random() * (i + 1));
+				var temp = game.players[i];
+				game.players[i] = game.players[j];
+				game.players[j] = temp;
+			}	
+			console.log(game.players);
+		
 	},
 	setVirus: function(){
 		//Pick room for virus
@@ -140,7 +153,6 @@ var game = {
 	},
 	setTimer: function(){
 		//Determine timer length
-		console.log("In setTimer");
 
 		var players = game.numPlayers;
 		var level = game.skill;
