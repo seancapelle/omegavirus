@@ -1,14 +1,24 @@
 var inquirer = require('inquirer');
 
 var game = {
-	virusCode: 33,
-	virusRoom: 222,
+	virusCode: 33, //Set to player's code?
+	room: ['0.0.0','0.0.1','0.0.2','0.1.0','0.1.1','0.1.2',
+			'0.2.0','0.2.1','0.2.2','1.0.0','1.0.1','1.0.2',
+			'1.1.0','1.1.1','1.1.2','1.2.0','1.2.1','1.2.2',
+			'2.0.0','2.0.1','2.0.2','2.1.0','2.1.1','2.1.2'],
+	dockingBay: ['Red Docking Bay', 'Yellow Docking Bay', 'Green Docking Bay', 'Blue Docking Bay'],
+	redSector: ['0.0.0','0.0.1','0.0.2','0.1.0','0.1.1','0.1.2'],
+	yellowSector: ['2.0.0','2.0.1','2.0.2','2.1.0','2.1.1','2.1.2'],
+	greenSector: ['1.1.0','1.1.1','1.1.2','1.2.0','1.2.1','1.2.2'],
+	blueSector: ['0.2.0','0.2.1','0.2.2','1.0.0','1.0.1','1.0.2'],
 	skill: 0,
 	timer: 0,
 	numPlayers: 0,
 	virusSpeak: ['You human scum!', 'Help me, help me! Ah-ha-ha-ha!'],
 	startGame: function(){
 		//Starts the game
+		game.setRoom();
+
 		inquirer.prompt({
 			name: "action",
 			type: "list",
@@ -60,20 +70,29 @@ var game = {
 				type: "password",
 				message: "Blue, enter Secret Code: "
 			}]).then(function(answer) {
-				console.log(answer.action);
 
-				var red = new Player(answer.red);
-				console.log(red);
-
-				var yellow = new Player(answer.yellow);
-				console.log(yellow);
-
-				var green = new Player(answer.green);
-				console.log(green);
-
-				var blue = new Player(answer.blue);
-				console.log(blue);
+				//Create players
+				if (answer.red != ''){
+					var red = new Player("red", answer.red);
+					console.log(red);
+				}
+				if (answer.yellow != ''){
+					var yellow = new Player("yellow", answer.yellow);
+					console.log(yellow);
+				}
+				if (answer.green != ''){
+					var green = new Player("green", answer.green);
+					console.log(green);
+				}
+				if (answer.blue != ''){
+					var blue = new Player("blue", answer.blue);
+					console.log(blue);
+				}
 			});
+	},
+	setRoom: function(){
+		//Pick room for virus
+		var virusRoom = game.room[Math.floor(Math.random() * game.room.length)];
 	},
 	countDown: function(level, numPlayers){
 		//Set clock and use reminders
@@ -117,7 +136,8 @@ var game = {
 }
 
 //Player constructor
-function Player(virusCode){
+function Player(color, virusCode){
+	this.color = color,
 	this.virusCode = virusCode,
 	this.hasGreen = true,
 	this.hasRed = false,
