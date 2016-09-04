@@ -1,7 +1,9 @@
 var inquirer = require('inquirer');
 
 var game = {
-	virusCode: 33, //Set to player's code?
+	virusCode: 33, //How to set to player's secret code?
+	virusRoom: '2.2.2',
+	virusSector: 'purple',
 	room: ['0.0.0','0.0.1','0.0.2','0.1.0','0.1.1','0.1.2',
 			'0.2.0','0.2.1','0.2.2','1.0.0','1.0.1','1.0.2',
 			'1.1.0','1.1.1','1.1.2','1.2.0','1.2.1','1.2.2',
@@ -21,7 +23,7 @@ var game = {
 		//Starts the game
 		
 		//Pick random virus room
-		game.setRoom();
+		game.setVirus();
 
 		inquirer.prompt({
 			name: "action",
@@ -109,9 +111,32 @@ var game = {
 				game.setTimer()
 			});
 	},
-	setRoom: function(){
+	setVirus: function(){
 		//Pick room for virus
-		var virusRoom = game.room[Math.floor(Math.random() * game.room.length)];
+		game.virusRoom = game.room[Math.floor(Math.random() * game.room.length)];
+
+		console.log(game.virusRoom);
+//Can't determine which sector virus is in!!!
+		for (i = 0; i < game.redSector.length; i++){
+			if (game.redSector.indexOf(game.virusRoom)) {
+				console.log("Virus in " + game.sectorName[0]);
+			}
+		}
+		for (i = 0; i < game.yellowSector.length; i++){
+			if (game.yellowSector.indexOf(game.virusRoom)) {
+				console.log("Virus in " + game.sectorName[1]);
+			}
+		}
+		for (i = 0; i < game.greenSector.length; i++){
+			if (game.greenSector.indexOf(game.virusRoom)) {
+				console.log("Virus in " + game.sectorName[2]);
+			}
+		}
+		for (i = 0; i < game.blueSector.length; i++){
+			if (game.blueSector.indexOf(game.virusRoom)) {
+				console.log("Virus in " + game.sectorName[3]);
+			}
+		}
 	},
 	setTimer: function(){
 		//Determine timer length
@@ -154,6 +179,7 @@ var game = {
 	countDown: function(level, numPlayers){
 		//Set clock and use reminders
 
+		console.log("In countDown");
 		//Timer counts down
 		// clock = setInterval(game.countDown, 1000);
 
@@ -162,7 +188,7 @@ var game = {
 		// 	//Decrement time
 		// 	game.timer--;
 			
-		}
+		
 	},
 	speak: function(){
 		//Narrate what happens
