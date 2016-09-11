@@ -1,7 +1,63 @@
+//Require node package
 var inquirer = require('inquirer');
 
+// //Commandos
+// var red = {
+// 	name: 'Red',
+// 	virusCode: null,
+// 	hasGreen: true,
+// 	hasRed: false,
+// 	hasBlue: false,
+// 	hasYellow: false,
+// 	hasNegatron: false,
+// 	hasDisruptor: false,
+// 	hasDecoder: false,
+// 	hasProbe: false,
+// 	items: ['Green Access Card'],
+// };
+// var yellow = {
+// 	name: 'Yellow',
+// 	virusCode: null,
+// 	hasGreen: true,
+// 	hasRed: false,
+// 	hasBlue: false,
+// 	hasYellow: false,
+// 	hasNegatron: false,
+// 	hasDisruptor: false,
+// 	hasDecoder: false,
+// 	hasProbe: false,
+// 	items: ['Green Access Card'],
+// };
+// var green = {
+// 	name: 'Green',
+// 	virusCode: null,
+// 	hasGreen: true,
+// 	hasRed: false,
+// 	hasBlue: false,
+// 	hasYellow: false,
+// 	hasNegatron: false,
+// 	hasDisruptor: false,
+// 	hasDecoder: false,
+// 	hasProbe: false,
+// 	items: ['Green Access Card'],
+// };
+// var blue = {
+// 	name: 'Blue',
+// 	virusCode: null,
+// 	hasGreen: true,
+// 	hasRed: false,
+// 	hasBlue: false,
+// 	hasYellow: false,
+// 	hasNegatron: false,
+// 	hasDisruptor: false,
+// 	hasDecoder: false,
+// 	hasProbe: false,
+// 	items: ['Green Access Card'],
+// };
+
+//Omega Virus
 var game = {
-	virusCode: 33, //How to set to player's secret code?
+	virusCode: 33, //How to set to player's secret code? if explored room == virusRoom, display this.player's viruscode
 	virusRoom: '2.2.2',
 	virusSector: 'purple',
 	room: ['0.0.0','0.0.1','0.0.2','0.1.0','0.1.1','0.1.2',
@@ -19,6 +75,7 @@ var game = {
 	timer: 0,
 	numPlayers: 0,
 	players: [],
+	playerCodes: [],
 	virusSpeak: ['You human scum!', 'Help me, help me! Ah-ha-ha-ha!', 'You fool!'],
 	startGame: function(){
 		//Starts the game
@@ -26,6 +83,7 @@ var game = {
 		//Pick random virus room
 		game.setVirus();
 
+		//Select skill level
 		inquirer.prompt({
 			name: "action",
 			type: "list",
@@ -43,6 +101,7 @@ var game = {
 					game.skill = 2;
 				break;
 			}
+
 			//Move to setting players
 			game.setPlayers();
 		})
@@ -69,50 +128,84 @@ var game = {
 				message: "Blue, enter Secret Code: "
 			}]).then(function(answer) {
 
-			//Create players if answer provided
+			//Populate players if answer provided
 				if (answer.red != ''){
-					var red = new Player("Red", answer.red);
 					game.numPlayers++;
 					game.players.push("Red");
+					game.playerCodes.push(answer.red);
 				}
 				if (answer.yellow != ''){
-					var yellow = new Player("Yellow", answer.yellow);
 					game.numPlayers++;
 					game.players.push("Yellow");
+					game.playerCodes.push(answer.yellow);
 				}
 				if (answer.green != ''){
-					var green = new Player("Green", answer.green);
 					game.numPlayers++;
 					game.players.push("Green");
+					game.playerCodes.push(answer.green);
 				}
 				if (answer.blue != ''){
-					var blue = new Player("Blue", answer.blue);
 					game.numPlayers++;
 					game.players.push("Blue");
+					game.playerCodes.push(answer.blue);
 				}
-				
-				//Randomize player order
-				game.shufflePlayers();
-
-				//Set timer with relevant # of players
-				game.setTimer();		
-			});
-		
+			
+				//Create the players
+				game.createPlayers();		
+			})
+			
+			
 	},
-	shufflePlayers: function(){
+	//Player constructor
+	Player: function(name, virusCode){
+			this.name = name,
+			this.virusCode = virusCode,
+			this.hasGreen = true,
+			this.hasRed = false,
+			this.hasBlue = false,
+			this.hasYellow = false,
+			this.hasNegatron = false,
+			this.hasDisruptor = false,
+			this.hasDecoder = false,
+			this.hasProbe = false,
+			this.items = ['Green Access Card'];
+	},
+	createPlayers: function(){									
+		//Loop through players and create them
+		
+		for (var i = 0; i < game.players.length; i++){
+
+			//Send each player into Player constructor
+			game.players[i] = new game.Player(game.players[i],game.playerCodes[i]);
+		}
+
 		//Randomize player order
+		game.shufflePlayers();
+
+		//Set timer with relevant # of players
+		game.setTimer();
+},	
+	shufflePlayers: function(){
+		//Randomize player order and keep synced wih playerCodes
 
 			for (var i = game.players.length - 1; i > 0; i--) {
-				var j = Math.floor(Math.random() * (i + 1));
-				var temp = game.players[i];
-				game.players[i] = game.players[j];
-				game.players[j] = temp;
+					var j = Math.floor(Math.random() * (i + 1));
+					var temp = game.players[i];
+					var temp2 = game.playerCodes[i];
+					game.players[i] = game.players[j];
+					game.players[j] = temp;
+					game.playerCodes[i] = game.playerCodes[j];
+					game.playerCodes[j] = temp2;
 			}	
-console.log(game.players);
+
+//HOW YOU CALL A PLAYER COLOR
+console.log(game.players[0].name);
 		
 	},
 	setVirus: function(){
-		//Pick room for virus
+		//Set the room for virus
+
+		//Pick random room
 		game.virusRoom = game.room[Math.floor(Math.random() * game.room.length)];
 
 		//Search eacter sector for virusRoom, and set virusSector to the respective sector
@@ -174,6 +267,11 @@ console.log(game.players);
 			//35 minutes
 			game.timer = 2100;
 		}
+		//Start count down
+		//game.countDown();
+
+		//Start the round
+		game.round();
 	},
 	countDown: function(level, numPlayers){
 		//Set clock and announce time every five minutes
@@ -196,6 +294,37 @@ console.log(game.players);
 			game.timer--;
 		}
 	},
+	round: function(){
+		//All players take a turn
+		
+		//Loop through players
+		// for (var i = 0; i < game.players.length; i++){
+
+			var i = 0;
+			var currentPlayer = game.players[i].name;
+			console.log(currentPlayer + ", hurry! We are running out of time.");
+			
+			inquirer.prompt({
+				name: "action",
+				type: "list",
+				message: "Choose action",
+				choices: ["0-Pass", "1-Attack", "2-Explore"]
+			})
+			// .then(function(answer) {
+			// 	switch(answer.action) {
+			// 		case '0-Pass':
+			// 			game.passTurn();
+			// 		break;
+			// 		case '1-Attack':
+			// 			game.attack();
+			// 		break;
+			// 		case '2-Explore':
+			// 			game.explore();
+			// 		break;
+			// 	}
+		// }
+		
+	},
 	speak: function(){
 		//Narrate what happens
 	},
@@ -205,12 +334,18 @@ console.log(game.players);
 	repeat: function(){
 		//When repeat button used
 	},
-	accessCheck: function(){
+	passTurn: function(){
+
+	},
+	attack: function(){
+
+	},
+	explore: function(){
 		//Can user enter room?
 	},
-	roomCheck: function(){
-		//When user enters room #
-	},
+	// roomCheck: function(){
+	// 	//When user enters room #
+	// },
 	giveItem: function(){
 		//Computer gives item
 	},
@@ -234,22 +369,22 @@ console.log(game.players);
 	}
 }
 
-//Player constructor
-function Player(name, virusCode){
-	this.name = name,
-	this.virusCode = virusCode,
-	this.hasGreen = true,
-	this.hasRed = false,
-	this.hasBlue = false,
-	this.hasYellow = false,
-	this.hasNegatron = false,
-	this.hasDisruptor = false,
-	this.hasDecoder = false,
-	this.hasProbe = false,
-	this.items = ['Green Access Card'];
-}
+// //Player constructor
+// function Player(name, virusCode){
+// 	this.name = name,
+// 	this.virusCode = virusCode,
+// 	this.hasGreen = true,
+// 	this.hasRed = false,
+// 	this.hasBlue = false,
+// 	this.hasYellow = false,
+// 	this.hasNegatron = false,
+// 	this.hasDisruptor = false,
+// 	this.hasDecoder = false,
+// 	this.hasProbe = false,
+// 	this.items = ['Green Access Card'];
+// }
 
 //Start the game
-// game.startGame();
-game.timer = 300;
-game.countDown();
+game.startGame();
+
+// game.round();
