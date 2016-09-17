@@ -74,6 +74,7 @@ var game = {
 	skill: 0,
 	timer: 0,
 	numPlayers: 0,
+	playerNumber: -1,
 	players: [],
 	playerCodes: [],
 	virusSpeak: ['You human scum!', 'Help me, help me! Ah-ha-ha-ha!', 'You fool!'],
@@ -85,12 +86,12 @@ var game = {
 
 		//Select skill level
 		inquirer.prompt({
-			name: "action",
+			name: "difficulty",
 			type: "list",
 			message: "Enter skill.",
 			choices: ["0-Easy", "1-Medium", "2-Hard"]
 		}).then(function(answer) {
-			switch(answer.action) {
+			switch(answer.difficulty) {
 				case '0-Easy':
 					game.skill = 0;
 				break;
@@ -270,8 +271,8 @@ console.log(game.players[0].name);
 		//Start count down
 		//game.countDown();
 
-		//Start the round
-		game.round();
+		//Set the current player
+		game.nextPlayer();
 	},
 	countDown: function(level, numPlayers){
 		//Set clock and announce time every five minutes
@@ -294,14 +295,26 @@ console.log(game.players[0].name);
 			game.timer--;
 		}
 	},
-	round: function(){
-		//All players take a turn
-		
-		//Loop through players
-		// for (var i = 0; i < game.players.length; i++){
+	nextPlayer: function(){
+		//Cycle through all players
 
-			var i = 0;
-			var currentPlayer = game.players[i].name;
+			game.playerNumber++;
+
+			if (game.playerNumber > game.players.length){
+				//Reset back to index 0
+				game.playerNumber = 0;
+			}
+
+		//Setup currentPlayer to the playerNumber index of players
+		var currentPlayer = game.players[game.playerNumber].name;
+
+		//Go to round
+		game.round(currentPlayer);
+
+	},
+	round: function(currentPlayer){
+		//Current player's turn
+		
 			console.log(currentPlayer + ", hurry! We are running out of time.");
 			
 			inquirer.prompt({
@@ -309,20 +322,22 @@ console.log(game.players[0].name);
 				type: "list",
 				message: "Choose action",
 				choices: ["0-Pass", "1-Attack", "2-Explore"]
+			}).then(function(answer){
+				switch(answer.action) {
+					case '0-Pass':
+						console.log("Pass");
+						// game.passTurn();
+					break;
+					case '1-Attack':
+						console.log("Attack");
+						// game.attack();
+					break;
+					case '2-Explore':
+					console.log("Explore");
+						// game.explore();
+					break;
+				}
 			})
-			// .then(function(answer) {
-			// 	switch(answer.action) {
-			// 		case '0-Pass':
-			// 			game.passTurn();
-			// 		break;
-			// 		case '1-Attack':
-			// 			game.attack();
-			// 		break;
-			// 		case '2-Explore':
-			// 			game.explore();
-			// 		break;
-			// 	}
-		// }
 		
 	},
 	speak: function(){
@@ -335,13 +350,15 @@ console.log(game.players[0].name);
 		//When repeat button used
 	},
 	passTurn: function(){
+		console.log("Pass the turn");
 
 	},
 	attack: function(){
-
+		console.log("Attacking");
 	},
 	explore: function(){
 		//Can user enter room?
+		console.log("Explore");
 	},
 	// roomCheck: function(){
 	// 	//When user enters room #
@@ -367,6 +384,7 @@ console.log(game.players[0].name);
 	closeSector: function(){
 		//Close docking bays
 	}
+			
 }
 
 // //Player constructor
