@@ -1,80 +1,30 @@
 //Require node package
 var inquirer = require('inquirer');
 
-// //Commandos
-// var red = {
-// 	name: 'Red',
-// 	virusCode: null,
-// 	hasGreen: true,
-// 	hasRed: false,
-// 	hasBlue: false,
-// 	hasYellow: false,
-// 	hasNegatron: false,
-// 	hasDisruptor: false,
-// 	hasDecoder: false,
-// 	hasProbe: false,
-// 	items: ['Green Access Card'],
-// };
-// var yellow = {
-// 	name: 'Yellow',
-// 	virusCode: null,
-// 	hasGreen: true,
-// 	hasRed: false,
-// 	hasBlue: false,
-// 	hasYellow: false,
-// 	hasNegatron: false,
-// 	hasDisruptor: false,
-// 	hasDecoder: false,
-// 	hasProbe: false,
-// 	items: ['Green Access Card'],
-// };
-// var green = {
-// 	name: 'Green',
-// 	virusCode: null,
-// 	hasGreen: true,
-// 	hasRed: false,
-// 	hasBlue: false,
-// 	hasYellow: false,
-// 	hasNegatron: false,
-// 	hasDisruptor: false,
-// 	hasDecoder: false,
-// 	hasProbe: false,
-// 	items: ['Green Access Card'],
-// };
-// var blue = {
-// 	name: 'Blue',
-// 	virusCode: null,
-// 	hasGreen: true,
-// 	hasRed: false,
-// 	hasBlue: false,
-// 	hasYellow: false,
-// 	hasNegatron: false,
-// 	hasDisruptor: false,
-// 	hasDecoder: false,
-// 	hasProbe: false,
-// 	items: ['Green Access Card'],
-// };
-
 //Omega Virus
 var game = {
 	virusCode: 33, //How to set to player's secret code? if explored room == virusRoom, display this.player's viruscode
-	virusRoom: '2.2.2',
+	virusRoom: '222',
 	virusSector: 'purple',
-	room: ['0.0.0','0.0.1','0.0.2','0.1.0','0.1.1','0.1.2',
-			'0.2.0','0.2.1','0.2.2','1.0.0','1.0.1','1.0.2',
-			'1.1.0','1.1.1','1.1.2','1.2.0','1.2.1','1.2.2',
-			'2.0.0','2.0.1','2.0.2','2.1.0','2.1.1','2.1.2'],
+	roomCode: ['00','01','02','10','11','12','20','21','22'],
+	currentCode: 0,
+	room: ['000','001','002','010','011','012',
+			'020','021','022','100','101','102',
+			'110','111','112','120','121','122',
+			'200','201','202','210','211','212'],
 	dockingBay: ['Red Docking Bay', 'Yellow Docking Bay', 'Green Docking Bay', 'Blue Docking Bay'],
 	sectorName: ['Red Sector', 'Yellow Sector', 'Green Sector', 'Blue Sector'],
-	redSector: ['0.0.0','0.0.1','0.0.2','0.1.0','0.1.1','0.1.2'],
-	yellowSector: ['2.0.0','2.0.1','2.0.2','2.1.0','2.1.1','2.1.2'],
-	greenSector: ['1.1.0','1.1.1','1.1.2','1.2.0','1.2.1','1.2.2'],
-	blueSector: ['0.2.0','0.2.1','0.2.2','1.0.0','1.0.1','1.0.2'],
-	items: ['Red Access Card', 'Yellow Access Card', 'Blue Access Card', 'Probe', 'Negatron', 'Decoder', 'Disruptor'],
+	redSector: ['000','001','002','010','011','012'],
+	yellowSector: ['200','201','202','210','211','212'],
+	greenSector: ['110','111','112','120','121','122'],
+	blueSector: ['020','021','022','100','101','102'],
+	currentSector: 'purple',
+	items: ['Red Access Card', 'Yellow Access Card', 'Green Access Card', 'Blue Access Card', 'Probe', 'Negatron', 'Decoder', 'Disruptor'],
 	skill: 0,
 	timer: 0,
 	numPlayers: 0,
 	playerNumber: -1,
+	currentPlayer: 0,
 	players: [],
 	playerCodes: [],
 	virusSpeak: ['You human scum!', 'Help me, help me! Ah-ha-ha-ha!', 'You fool!'],
@@ -154,8 +104,6 @@ var game = {
 				//Create the players
 				game.createPlayers();		
 			})
-			
-			
 	},
 	//Player constructor
 	Player: function(name, virusCode){
@@ -206,7 +154,7 @@ console.log(game.players[0].name);
 	setVirus: function(){
 		//Set the room for virus
 
-		//Pick random room
+		//Pick random room for virus
 		game.virusRoom = game.room[Math.floor(Math.random() * game.room.length)];
 
 		//Search eacter sector for virusRoom, and set virusSector to the respective sector
@@ -300,22 +248,22 @@ console.log(game.players[0].name);
 
 			game.playerNumber++;
 
-			if (game.playerNumber > game.players.length){
-				//Reset back to index 0
+			if (game.playerNumber == game.players.length){
+				//Reset back to 0
 				game.playerNumber = 0;
 			}
 
-		//Setup currentPlayer to the playerNumber index of players
-		var currentPlayer = game.players[game.playerNumber].name;
+		//Set currentPlayer to the playerNumber index of players
+		game.currentPlayer = game.players[game.playerNumber];
 
 		//Go to round
-		game.round(currentPlayer);
+		game.round(game.currentPlayer);
 
 	},
 	round: function(currentPlayer){
 		//Current player's turn
 		
-			console.log(currentPlayer + ", hurry! We are running out of time.");
+			console.log(game.currentPlayer.name + ", hurry! We are running out of time.");
 			
 			inquirer.prompt({
 				name: "action",
@@ -325,20 +273,16 @@ console.log(game.players[0].name);
 			}).then(function(answer){
 				switch(answer.action) {
 					case '0-Pass':
-						console.log("Pass");
-						// game.passTurn();
+						game.passTurn();
 					break;
 					case '1-Attack':
-						console.log("Attack");
-						// game.attack();
+						game.attack();
 					break;
 					case '2-Explore':
-					console.log("Explore");
-						// game.explore();
+						game.explore();
 					break;
 				}
 			})
-		
 	},
 	speak: function(){
 		//Narrate what happens
@@ -350,27 +294,93 @@ console.log(game.players[0].name);
 		//When repeat button used
 	},
 	passTurn: function(){
-		console.log("Pass the turn");
+		//End the turn
 
+		game.sayCode();		
 	},
 	attack: function(){
-		console.log("Attacking");
+		console.log("Attack");
 	},
 	explore: function(){
-		//Can user enter room?
-		console.log("Explore");
+		//Check if player has access to explore room and determine gameplay
+
+		inquirer.prompt([{
+				name: "room",
+				type: "input",
+				message: "Which room?"
+			}]).then(function(answer){
+
+				//Determine sector answer.room is in and set currentSector to respective access card color
+				for (var i = 0; i < game.redSector.length; i++){
+					if (answer.room == game.redSector[i]) {
+						game.currentSector = game.items[0];
+					}
+				}
+				for (var i = 0; i < game.yellowSector.length; i++){
+					if (answer.room == game.yellowSector[i]) {
+						game.currentSector = game.items[1];
+					}
+				}
+				for (var i = 0; i < game.greenSector.length; i++){
+					if (answer.room == game.greenSector[i]) {
+						game.currentSector = game.items[2];
+					}
+				}
+				for (var i = 0; i < game.blueSector.length; i++){
+					if (answer.room == game.blueSector[i]) {
+						game.currentSector = game.items[3];
+					}
+				}
+				console.log(game.currentSector);
+
+				//Check if player has correct access
+				for (var i = 0; i < game.currentPlayer.items.length; i++){
+					if (game.currentPlayer.items[i] == game.currentSector){
+						console.log("Can search");
+							//Switch for actions
+
+					}
+					else {
+						console.log("Cannot search");
+						//What happens when you can't search a room? Go to nextPlayer?
+					}
+				}
+				
+			})
 	},
 	// roomCheck: function(){
 	// 	//When user enters room #
 	// },
 	giveItem: function(){
 		//Computer gives item
+
+		//game.currentPlayer.items.push();
 	},
 	takeItem: function(){
 		//When virus removes an item
 	},
 	sayCode: function(){
-		//Announced after room explored
+		//Announced at end of each turn
+
+		var ranNum = Math.floor(Math.random() * game.roomCode.length);
+
+		for (var i = 0; i < game.roomCode.length; i++){
+//THIS PART NOT WORKINGvvvvvvvv
+			//If not the virus room, don't use virus code
+			if (game.virusCode == game.currentPlayer.virusCode && game.currentRoom != game.virusRoom){
+					//Try again
+					console.log("code and virus code matched");
+					game.sayCode();
+			}
+			else{
+
+				game.currentCode = game.roomCode[ranNum];
+			}
+		}
+		console.log("Code: " + game.currentCode);
+
+		//Next player's turn
+		game.nextPlayer();
 	},
 	fireLaser: function(){
 		//Shoot at commando, probe, or virus
@@ -386,21 +396,6 @@ console.log(game.players[0].name);
 	}
 			
 }
-
-// //Player constructor
-// function Player(name, virusCode){
-// 	this.name = name,
-// 	this.virusCode = virusCode,
-// 	this.hasGreen = true,
-// 	this.hasRed = false,
-// 	this.hasBlue = false,
-// 	this.hasYellow = false,
-// 	this.hasNegatron = false,
-// 	this.hasDisruptor = false,
-// 	this.hasDecoder = false,
-// 	this.hasProbe = false,
-// 	this.items = ['Green Access Card'];
-// }
 
 //Start the game
 game.startGame();
