@@ -19,7 +19,8 @@ var game = {
 	greenSector: ['110','111','112','120','121','122'],
 	blueSector: ['020','021','022','100','101','102'],
 	currentSector: 'purple',
-	items: ['Red Access Card', 'Yellow Access Card', 'Green Access Card', 'Blue Access Card', 'Probe', 'Negatron', 'Decoder', 'Disruptor'],
+	//Green access card is the only part that breaks the color convention. When giving items, can do items+1 to go past it
+	items: ['Green Access Card','Red Access Card','Yellow Access Card','Blue Access Card','Probe','Negatron','Decoder','Disruptor'],
 	skill: 0,
 	timer: 0,
 	numPlayers: 0,
@@ -336,8 +337,15 @@ console.log(game.players[0].name);
 				//Check if player has correct access
 				for (var i = 0; i < game.currentPlayer.items.length; i++){
 					if (game.currentPlayer.items[i] == game.currentSector){
-						console.log("Can search");
-							//Switch for actions
+						
+						//Switch for actions
+						switch(Math.floor(Math.random() * 2)) {
+							case 0:
+								game.giveItem();
+								break;
+							case 1:
+								game.securityBreach();
+						}	
 
 					}
 					else {
@@ -353,8 +361,9 @@ console.log(game.players[0].name);
 	// },
 	giveItem: function(){
 		//Computer gives item
-
+		console.log("in giveItem");
 		//game.currentPlayer.items.push();
+		game.nextPlayer();
 	},
 	takeItem: function(){
 		//When virus removes an item
@@ -390,6 +399,8 @@ console.log(game.players[0].name);
 	},
 	securityBreach: function(){
 		//When room explored
+		console.log("in securityBreach");
+		game.nextPlayer();
 	},
 	closeSector: function(){
 		//Close docking bays
