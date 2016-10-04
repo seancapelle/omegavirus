@@ -45,13 +45,12 @@ var game = {
 			switch(answer.difficulty) {
 				case '0-Easy':
 					game.skill = 0;
-				break;
+					break;
 				case '1-Medium':
 					game.skill = 1;
-				break;
+					break;
 				case '2-Hard':
 					game.skill = 2;
-				break;
 			}
 
 			//Move to setting players
@@ -110,10 +109,10 @@ var game = {
 	Player: function(name, virusCode){
 			this.name = name,
 			this.virusCode = virusCode,
-			this.hasGreen = true,
-			this.hasRed = false,
-			this.hasBlue = false,
-			this.hasYellow = false,
+			// this.hasGreen = true,
+			// this.hasRed = false,
+			// this.hasBlue = false,
+			// this.hasYellow = false,
 			this.hasNegatron = false,
 			this.hasDisruptor = false,
 			this.hasDecoder = false,
@@ -333,17 +332,21 @@ console.log(game.players[0].name);
 					}
 				}
 				console.log(game.currentSector);
-
+				var currentRoom = answer.room;
+//Trying to carry currentRoom into securityBreach
 				//Check if player has correct access
 				for (var i = 0; i < game.currentPlayer.items.length; i++){
 					if (game.currentPlayer.items[i] == game.currentSector){
-						
+					
 						//Switch for actions
-						switch(Math.floor(Math.random() * 2)) {
+						var action = Math.floor(Math.random() * 2);
+						
+						switch(action) {
 							case 0:
 								game.giveItem();
 								break;
 							case 1:
+								// game.securityBreach(answer.room);
 								game.securityBreach();
 						}	
 
@@ -351,6 +354,7 @@ console.log(game.players[0].name);
 					else {
 						console.log("Cannot search");
 						//What happens when you can't search a room? Go to nextPlayer?
+						//game.sayCode();
 					}
 				}
 				
@@ -362,8 +366,26 @@ console.log(game.players[0].name);
 	giveItem: function(){
 		//Computer gives item
 		console.log("in giveItem");
-		//game.currentPlayer.items.push();
-		game.nextPlayer();
+		var itemNum = 0;
+			switch(Math.floor(Math.random() * 4)) {
+				case 0:
+					itemNum = 1;
+					break;
+				case 1:
+					itemNum = 2;
+					break;
+				case 2:	
+					itemNum = 3;
+					break;
+				case 3:
+					itemNum = 4;
+			}
+	
+		game.currentPlayer.items.push(game.items[itemNum]);
+	
+		console.log(game.currentPlayer.name + " " + game.items[itemNum] + " found.");
+
+		game.sayCode();
 	},
 	takeItem: function(){
 		//When virus removes an item
@@ -398,9 +420,10 @@ console.log(game.players[0].name);
 		//Move commando to different docking bay
 	},
 	securityBreach: function(){
+		
 		//When room explored
-		console.log("in securityBreach");
-		game.nextPlayer();
+		console.log("Security breach! Security breach. In room BLANK. " + game.currentPlayer.name + " energize two shields.");
+		game.sayCode();
 	},
 	closeSector: function(){
 		//Close docking bays
