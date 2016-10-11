@@ -393,22 +393,22 @@ console.log(game.players[0].name);
 	sayCode: function(){
 		//Announced at end of each turn
 
-		var ranNum = Math.floor(Math.random() * game.roomCode.length);
+// 		var ranNum = Math.floor(Math.random() * game.roomCode.length);
 
-		for (var i = 0; i < game.roomCode.length; i++){
-//THIS PART NOT WORKINGvvvvvvvv
-			//If not the virus room, don't use virus code
-			if (game.virusCode == game.currentPlayer.virusCode && game.currentRoom != game.virusRoom){
-					//Try again
-					console.log("code and virus code matched");
-					game.sayCode();
-			}
-			else{
+// 		for (var i = 0; i < game.roomCode.length; i++){
+// //THIS PART NOT WORKINGvvvvvvvv
+// 			//If not the virus room, don't use virus code
+// 			if (game.virusCode == game.currentPlayer.virusCode && game.currentRoom != game.virusRoom){
+// 					//Try again
+// 					console.log("code and virus code matched");
+// 					game.sayCode();
+// 			}
+// 			else{
 
-				game.currentCode = game.roomCode[ranNum];
-			}
-		}
-		console.log("Code: " + game.currentCode);
+// 				game.currentCode = game.roomCode[ranNum];
+// 			}
+// 		}
+// 		console.log("Code: " + game.currentCode);
 
 		//Next player's turn
 		game.nextPlayer();
@@ -422,8 +422,33 @@ console.log(game.players[0].name);
 	securityBreach: function(){
 		
 		//When room explored
-		console.log("Security breach! Security breach. In room BLANK. " + game.currentPlayer.name + " energize two shields.");
-		game.sayCode();
+		console.log("Security breach! Security breach. In room BLANK. ");
+
+		//Number to guess for the attack
+		var ranNum = Math.floor(Math.random() * 3);
+		console.log(ranNum);
+
+		//User has to guess ranNum to defend the attack
+		inquirer.prompt([{
+				name: "shoot",
+				type: "input",
+				message:game.currentPlayer.name + ", energize two shields."
+			}]).then(function(answer){
+
+				//Separate both numbers to see if one is equal to ranNum
+				var guessedNums = answer.shoot.split("");
+
+					if (guessedNums[0]  == ranNum || guessedNums[1] == ranNum){
+						console.log("I missed!");
+					}
+					else {
+						//takeItem or teleport
+						console.log("Didn't guess right");
+					}
+				
+				game.sayCode();
+			});
+	
 	},
 	closeSector: function(){
 		//Close docking bays
