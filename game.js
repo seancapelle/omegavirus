@@ -360,9 +360,6 @@ console.log(game.players[0].name);
 				
 			})
 	},
-	// roomCheck: function(){
-	// 	//When user enters room #
-	// },
 	giveItem: function(){
 		//Computer gives item
 		console.log("in giveItem");
@@ -389,10 +386,15 @@ console.log(game.players[0].name);
 	},
 	takeItem: function(){
 		//When virus removes an item
+
+		console.log("Take item");
+
+		game.sayCode();
 	},
 	sayCode: function(){
 		//Announced at end of each turn
 
+		console.log("Say code");
 // 		var ranNum = Math.floor(Math.random() * game.roomCode.length);
 
 // 		for (var i = 0; i < game.roomCode.length; i++){
@@ -418,6 +420,9 @@ console.log(game.players[0].name);
 	},
 	teleport: function(){
 		//Move commando to different docking bay
+		
+		console.log("Teleport");
+		game.sayCode();
 	},
 	securityBreach: function(){
 		
@@ -442,6 +447,10 @@ console.log(game.players[0].name);
 						console.log("I missed!");
 					}
 					else {
+						if(game.currentPlayer.items.length > ){
+						}
+						else{
+						}
 						//takeItem or teleport
 						console.log("Didn't guess right");
 					}
