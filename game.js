@@ -388,8 +388,19 @@ console.log(game.players[0].name);
 		//When virus removes an item
 
 		console.log("Take item");
+		
+		var ranNum = Math.floor(Math.random() * game.currentPlayer.items.length);
+		
+		//See if Green Access Card (item 0) is slated to be deleted, rerun takeItem if so
+		if (ranNum != 0) {
+			game.currentPlayer.items.splice(ranNum, 1);
 
-		game.sayCode();
+			game.sayCode();
+		}
+		else {
+
+			game.takeItem();
+		}
 	},
 	sayCode: function(){
 		//Announced at end of each turn
@@ -443,19 +454,22 @@ console.log(game.players[0].name);
 				//Separate both numbers to see if one is equal to ranNum
 				var guessedNums = answer.shoot.split("");
 
+					//See if either of guessedNum equals ranNum
 					if (guessedNums[0]  == ranNum || guessedNums[1] == ranNum){
 						console.log("I missed!");
+
+						game.sayCode();
 					}
 					else {
-						if(game.currentPlayer.items.length > ){
+						//If currentPlayer has more than a Green Access Card, go to takeItem, else teleport
+						if(game.currentPlayer.items.length > 1){
+							game.takeItem();
 						}
 						else{
+							game.teleport();
 						}
-						//takeItem or teleport
-						console.log("Didn't guess right");
 					}
 				
-				game.sayCode();
 			});
 	
 	},
